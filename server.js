@@ -19,7 +19,7 @@ const createAccountRouter = require("./routes/createAccount");
 const loginRouter = require("./routes/login");
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 6000;
 
 passport.use(
   new LocalStrategy((username, password, done) => {

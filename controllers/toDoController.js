@@ -4,28 +4,36 @@ const { body, validationResult } = require("express-validator");
 var async = require("async");
 const toDo = require("../models/toDo");
 
+const jwt = require("jsonwebtoken");
+
 // show all To Do Items
-exports.toDoList = function (req, res, next) {
-  ToDoItem.find({}, "title detail dueDate")
-    .sort({ _id: -1 })
-    .populate("detail")
-    .exec(function (err, db_response) {
-      if (err) {
-        return next(err);
-      }
-      list_items = [];
-      db_response.forEach((item) => {
-        list_item = {
-          _id: item._id,
-          title: item.title,
-          dueDate: item.dueDate,
-          detail: item.detail,
-          dueDate_formatted: item.dueDate_formatted,
-        };
-        list_items.push(list_item);
-      });
-      res.send({ list_items });
-    });
+exports.toDoList = (req, res, next) => {
+  jwt.verify(req.token, "secretkey", (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      ToDoItem.find({}, "title detail dueDate")
+        .sort({ _id: -1 })
+        .populate("detail")
+        .exec(function (err, db_response) {
+          if (err) {
+            return next(err);
+          }
+          list_items = [];
+          db_response.forEach((item) => {
+            list_item = {
+              _id: item._id,
+              title: item.title,
+              dueDate: item.dueDate,
+              detail: item.detail,
+              dueDate_formatted: item.dueDate_formatted,
+            };
+            list_items.push(list_item);
+          });
+          res.send({ list_items });
+        });
+    }
+  });
 };
 
 // Create a new on POST.

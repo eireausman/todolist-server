@@ -1,9 +1,10 @@
 var express = require("express");
 var router = express.Router();
 const toDoItem = require("../controllers/toDoController");
+const { verifyToken } = require("../modules/jwtToken");
 
 // create a default GET route
-router.get("/", toDoItem.toDoList);
+router.get("/", verifyToken, toDoItem.toDoList);
 
 router.post("/new-todo-item", toDoItem.addNewToDoItem);
 

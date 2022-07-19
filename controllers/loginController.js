@@ -1,5 +1,6 @@
 const express = require("express");
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
 
 // check if credentials are valid
 exports.logUserIn = function (req, res, next) {
@@ -15,7 +16,20 @@ exports.loginSuccess = function (req, res, next) {
     LoginOutcome: true,
     Username: req.user.username,
   };
-  res.send(message);
+  const user = {
+    user: req.user.username,
+  };
+  jwt.sign(
+    { user },
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: "120s" },
+    (err, token) => {
+      res.json({
+        token,
+      });
+    }
+  );
+  // res.send(message);
 };
 
 exports.loginFailure = function (req, res, next) {
