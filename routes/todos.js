@@ -6,7 +6,7 @@ const { verifyToken } = require("../modules/jwtToken");
 // create a default GET route
 router.get("/", verifyToken, toDoItem.toDoList);
 
-router.post("/new-todo-item", toDoItem.addNewToDoItem);
+router.post("/new-todo-item", verifyToken, toDoItem.addNewToDoItem);
 
 // router.get("/any", toDoItem.findAnyToDo);
 

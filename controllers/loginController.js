@@ -12,29 +12,33 @@ exports.logUserIn = function (req, res, next) {
 };
 
 exports.loginSuccess = function (req, res, next) {
-  const message = {
-    LoginOutcome: true,
-    Username: req.user.username,
-  };
   const user = {
     user: req.user.username,
   };
   jwt.sign(
     { user },
     process.env.JWT_SECRET_KEY,
-    { expiresIn: "120s" },
+    { expiresIn: "24h" },
     (err, token) => {
-      res.json({
+      if (err) {
+        res.send(err);
+      }
+      const message = {
+        loginOutcome: true,
         token,
+      };
+      res.json({
+        message,
       });
     }
   );
-  // res.send(message);
 };
 
 exports.loginFailure = function (req, res, next) {
   const message = {
-    LoginOutcome: false,
+    loginOutcome: false,
   };
-  res.send(message);
+  res.json({
+    message,
+  });
 };

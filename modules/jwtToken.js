@@ -8,6 +8,7 @@ exports.verifyToken = (req, res, next) => {
     const bearer = bearerHeader.split(" ");
     // Get token from array
     const bearerToken = bearer[1];
+
     // Set the token
     req.token = bearerToken;
     // Next middleware

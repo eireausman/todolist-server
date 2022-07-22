@@ -6,6 +6,7 @@ var toDoSchema = new Schema({
   title: { type: String, required: true, minLength: 3 },
   dueDate: { type: Date },
   detail: { type: String },
+  username: { type: String, required: true },
 });
 
 // Virtual URL

@@ -13,10 +13,11 @@ const User = require("./models/User");
 const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-
+const jwt = require("jsonwebtoken");
 const todosRouter = require("./routes/todos");
 const createAccountRouter = require("./routes/createAccount");
 const loginRouter = require("./routes/login");
+const defaultRouter = require("./routes/defaultRouter");
 
 const app = express();
 const port = process.env.PORT || 6000;
@@ -69,13 +70,37 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use(function (req, res, next) {
-  res.locals.currentUser = req.user;
+  // Get auth header value
+  const bearerHeader = req.headers["authorization"];
+  // Check if bearer is undefined
+  if (typeof bearerHeader !== "undefined") {
+    // Split at the space
+    const bearer = bearerHeader.split(" ");
+    // Get token from array
+    const bearerToken = bearer[1];
+    // Set the token
+    req.token = bearerToken;
+    // Next middleware
+  }
+  next();
+});
+
+app.use(function (req, res, next) {
+  jwt.verify(req.token, process.env.JWT_SECRET_KEY, (err, authData) => {
+    if (err) {
+      res.locals.userLoginStatus = false;
+    } else {
+      res.locals.loggedInUsername = authData.user.user;
+      res.locals.userLoginStatus = true;
+    }
+  });
   next();
 });
 
 app.use("/todos", todosRouter);
 app.use("/createaccount", createAccountRouter);
 app.use("/login", loginRouter);
+app.use("/", defaultRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
